@@ -24,13 +24,15 @@ export async function POST(request: Request) {
       organization: profile.openai_organization_id
     })
 
-const response = await openai.chat.completions.create({
-  model: "gpt-3.5-turbo",
-  messages: messages as ChatCompletionCreateParamsBase["messages"],
-  temperature: chatSettings?.temperature ?? 0.7,
-  max_tokens: 4096,
-  stream: true,
+import OpenAI from "openai";
+const client = new OpenAI();
+
+const response = await client.responses.create({
+    model: "gpt-4o-mini",
+    input: "Write a one-sentence bedtime story about a unicorn.",
 });
+
+console.log(response.output_text);
 
     const stream = OpenAIStream(response)
 
