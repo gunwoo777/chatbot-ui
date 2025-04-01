@@ -27,12 +27,13 @@ export async function POST(request: Request) {
 import OpenAI from "openai";
 const client = new OpenAI();
 
-const response = await client.completions.create({
-  model: "gpt-3.5-turbo", // 또는 "gpt-4"
-  input: "Write a one-sentence bedtime story about a unicorn.",
+const response = await openai.chat.completions.create({
+  model: "gpt-3.5-turbo",
+  messages: messages as ChatCompletionCreateParamsBase["messages"],
+  temperature: chatSettings?.temperature ?? 0.7,
+  max_tokens: 4096,
+  stream: true,
 });
-
-console.log(response.output_text);
 
     const stream = OpenAIStream(response)
 
