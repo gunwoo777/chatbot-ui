@@ -25,16 +25,12 @@ export async function POST(request: Request) {
     })
 
     const response = await openai.chat.completions.create({
-      model: chatSettings.model as ChatCompletionCreateParamsBase["model"],
-      messages: messages as ChatCompletionCreateParamsBase["messages"],
-      temperature: chatSettings.temperature,
-      max_tokens:
-        chatSettings.model === "gpt-4-vision-preview" ||
-        chatSettings.model === "gpt-4o"
-          ? 4096
-          : null, // TODO: Fix
-      stream: true
-    })
+  model: "gpt-3.5-turbo",
+  messages: messages as ChatCompletionCreateParamsBase["messages"],
+  temperature: chatSettings.temperature,
+  max_tokens: 4096,
+  stream: true,
+});
 
     const stream = OpenAIStream(response)
 
