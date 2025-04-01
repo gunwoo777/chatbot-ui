@@ -16,7 +16,8 @@ export async function POST(request: Request) {
 
   try {
     const profile = await getServerProfile()
-
+    console.log("🔥 profile 확인:", profile);
+    
     checkApiKey(profile.openai_api_key, "OpenAI")
 
     const openai = new OpenAI({
