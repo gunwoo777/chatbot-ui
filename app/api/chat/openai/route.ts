@@ -24,8 +24,7 @@ export async function POST(request: Request) {
       organization: profile.openai_organization_id
     })
 
-import OpenAI from "openai";
-const client = new OpenAI();
+
 
 const response = await openai.chat.completions.create({
   model: "gpt-3.5-turbo",
