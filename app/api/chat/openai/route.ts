@@ -27,9 +27,9 @@ export async function POST(request: Request) {
 import OpenAI from "openai";
 const client = new OpenAI();
 
-const response = await client.responses.create({
-    model: "gpt-4o-mini",
-    input: "Write a one-sentence bedtime story about a unicorn.",
+const response = await client.completions.create({
+  model: "gpt-3.5-turbo", // 또는 "gpt-4"
+  input: "Write a one-sentence bedtime story about a unicorn.",
 });
 
 console.log(response.output_text);
