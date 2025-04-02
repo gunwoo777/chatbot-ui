@@ -16,7 +16,11 @@ export async function POST(request: Request) {
 
   try {
     const profile = await getServerProfile()
-    console.log("🔥 profile 값 확인:", profile);
+
+if (!profile || !profile.openai_api_key) {
+  throw new Error("❌ profile이 비었거나 openai_api_key가 없음: " + JSON.stringify(profile))
+}
+
     
     checkApiKey(profile.openai_api_key, "OpenAI")
 
