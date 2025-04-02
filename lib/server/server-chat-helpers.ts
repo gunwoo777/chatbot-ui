@@ -19,8 +19,6 @@ export async function getServerProfile() {
 
   const { data: userData, error: userError } = await supabase.auth.getUser()
 
-  console.log("🔥 getUser result:", userData, userError)
-
   if (!userData?.user) {
     throw new Error("❌ Supabase 인증 문제! getUser() 실패함")
   }
