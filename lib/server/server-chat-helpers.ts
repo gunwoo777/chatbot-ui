@@ -5,6 +5,7 @@ import { cookies } from "next/headers"
 
 export async function getServerProfile() {
   const cookieStore = cookies()
+
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -16,13 +17,15 @@ export async function getServerProfile() {
       }
     }
   )
-
+ 
   const { data: userData, error: userError } = await supabase.auth.getUser()
-console.log("🔥 getUser result:", userData, userError)
-
+  console.log("🔥 getUser result:", userData, userError)
+ 
   if (!userData?.user) {
     throw new Error("❌ Supabase 인증 문제! getUser() 실패함")
   }
+
+  const user = userData.user
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -31,13 +34,12 @@ console.log("🔥 getUser result:", userData, userError)
     .single()
 
   if (!profile) {
-    throw new Error("Profile not found")
+    throw new Error("❌ Profile not found")
   }
 
-  const profileWithKeys = addApiKeysToProfile(profile)
-
-  return profileWithKeys
+  return profile
 }
+
 
 function addApiKeysToProfile(profile: Tables<"profiles">) {
   const apiKeys = {
