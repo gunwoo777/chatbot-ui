@@ -5,7 +5,6 @@ import { cookies } from "next/headers"
 
 export async function getServerProfile() {
   const cookieStore = cookies()
-
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -35,15 +34,10 @@ export async function getServerProfile() {
     .single()
 
   if (!profile) {
-    throw new Error("❌ Profile not found")
+    throw new Error("Profile not found")
   }
 
-  const profileWithKeys = {
-    ...profile,
-    openai_api_key: process.env.OPENAI_API_KEY || profile.openai_api_key
-  }
-
-  return profileWithKeys
+  return profile
 }
 
 
