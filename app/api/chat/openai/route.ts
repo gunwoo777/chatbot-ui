@@ -1,11 +1,8 @@
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
-import { ServerRuntime } from "next"
 import OpenAI from "openai"
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
-
-export const runtime: ServerRuntime = "edge"
 
 export async function POST(request: Request) {
   const json = await request.json()
@@ -17,41 +14,40 @@ export async function POST(request: Request) {
   try {
     const profile = await getServerProfile()
 
-if (!profile || !profile.openai_api_key) {
-  throw new Error("❌ profile이 비었거나 openai_api_key가 없음: " + JSON.stringify(profile))
-}
+    if (!profile) {
+      throw new Error("User profile not found")
+    }
 
-    
+    if (!profile.openai_api_key) {
+      throw new Error("OpenAI API key not configured")
+    }
+
     checkApiKey(profile.openai_api_key, "OpenAI")
 
     const openai = new OpenAI({
-      apiKey: profile.openai_api_key || "",
+      apiKey: profile.openai_api_key,
       organization: profile.openai_organization_id
     })
 
-
-
-const response = await openai.chat.completions.create({
-  model: "gpt-3.5-turbo",
-  messages: messages as ChatCompletionCreateParamsBase["messages"],
-  temperature: chatSettings?.temperature ?? 0.7,
-  max_tokens: 4096,
-  stream: true,
-});
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: messages as ChatCompletionCreateParamsBase["messages"],
+      temperature: chatSettings?.temperature ?? 0.7,
+      max_tokens: 4096,
+      stream: true,
+    })
 
     const stream = OpenAIStream(response)
-
     return new StreamingTextResponse(stream)
+
   } catch (error: any) {
-    let errorMessage = error.message || "An unexpected error occurred"
+    let errorMessage = error.message || "An error occurred"
     const errorCode = error.status || 500
 
     if (errorMessage.toLowerCase().includes("api key not found")) {
-      errorMessage =
-        "OpenAI API Key not found. Please set it in your profile settings."
+      errorMessage = "OpenAI API key not configured in profile settings"
     } else if (errorMessage.toLowerCase().includes("incorrect api key")) {
-      errorMessage =
-        "OpenAI API Key is incorrect. Please fix it in your profile settings."
+      errorMessage = "Invalid OpenAI API key in profile settings"
     }
 
     return new Response(JSON.stringify({ message: errorMessage }), {
